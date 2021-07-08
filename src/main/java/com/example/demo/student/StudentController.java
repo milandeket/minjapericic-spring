@@ -1,31 +1,31 @@
 package com.example.demo.student;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.student.dto.StudentCreateRequest;
+import com.example.demo.student.dto.StudentCreateResponse;
+import com.example.demo.student.dto.StudentListResponse;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.Month;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(path="api/v1/student")
+@RequestMapping("api/v1/students")
+@RequiredArgsConstructor
 public class StudentController {
     private final StudentService studentService;
 
-    @Autowired
-    public StudentController(StudentService studentService) {
-        this.studentService = studentService;
-    }
-
     @GetMapping
-    public List<Student> getStudents() {
-        return studentService.getStudents();
+    public ResponseEntity<List<StudentListResponse>> getStudents() {
+        return ResponseEntity.ok(studentService.list());
     }
-
 
     @PostMapping
-    public void registerNewStudent(@RequestBody Student student) {
-        studentService.addNewStudent(student);
+    public ResponseEntity<StudentCreateResponse> registerNewStudent(@Valid @RequestBody StudentCreateRequest student) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(studentService.create(student));
     }
 
 }
